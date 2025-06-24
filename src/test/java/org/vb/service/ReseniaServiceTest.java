@@ -13,6 +13,9 @@ import org.vb.model.entity.Resenia;
 import org.vb.repository.ReseniaRepository;
 import org.vb.service.utils.TestDataFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -64,4 +67,34 @@ class ReseniaServiceTest {
         verify(reseniaRepository).save(resenia);
         verify(reseniaMapper, never()).toResponseDTO(any());
     }
+
+    @Test
+    void getReseniasPorEntrenador_siNoExistenCreadas_retornaListaVacia() {
+        String entrenadorId = TestDataFactory.ENTRENADOR_ID;
+        List<Resenia> resenias = new ArrayList<>();
+        when(reseniaRepository.findByEntrenadorId(entrenadorId)).thenReturn(resenias);
+
+        List<ReseniaResponseDTO> result = reseniaService.getReseniasPorEntrenador(entrenadorId);
+
+        assertEquals(0, result.size());
+        verify(reseniaRepository).findByEntrenadorId(entrenadorId);
+    }
+
+    @Test
+    void getReseniasPorEntrenador_siExistenCreadas_retornaLista() {
+        String entrenadorId= TestDataFactory.ENTRENADOR_ID;
+        Resenia resenia = TestDataFactory.createResenia();
+        ReseniaResponseDTO responseDTO = TestDataFactory.responseReseniaDTO();
+        List<Resenia> resenias = List.of(resenia);
+
+        when(reseniaRepository.findByEntrenadorId(entrenadorId)).thenReturn(resenias);
+        when(reseniaMapper.toResponseDTO(resenia)).thenReturn(responseDTO);
+        List<ReseniaResponseDTO> result = reseniaService.getReseniasPorEntrenador(entrenadorId);
+
+
+        assertEquals(1, result.size());
+        assertEquals(entrenadorId, result.get(0).getEntrenadorId());
+        verify(reseniaRepository).findByEntrenadorId(entrenadorId);
+    }
+
 }
