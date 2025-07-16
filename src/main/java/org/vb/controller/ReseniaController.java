@@ -14,7 +14,7 @@ import org.vb.service.ReseniaService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/resenias")
+@RequestMapping(value = {"/resenias", "/resenias/"})
 public class ReseniaController {
     private final ReseniaService reseniaService;
 
